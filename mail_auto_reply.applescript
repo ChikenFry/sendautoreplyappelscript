@@ -86,18 +86,22 @@ using terms from application "Mail"
 			set replyText to randomPoem & return & return & "— auto reply"
 			
 			-- send fresh outgoing message (no quoting)
-			set outMsg to make new outgoing message with properties {subject:"Re: " & theSubj, content:replyText, visible:false}
-			tell outMsg
-				make new to recipient at end of to recipients with properties {address:senderAddr}
+			tell application "Mail"
+				set outMsg to make new outgoing message with properties {subject:"Re: " & theSubj, content:replyText, visible:false}
+				tell outMsg
+					make new to recipient at end of to recipients with properties {address:senderAddr}
+				end tell
+				send outMsg
 			end tell
-			send outMsg
 			
 			do shell script "echo " & quoted form of ("SENT to " & senderAddr) & " >> " & quoted form of logFile
 			
 			-- mark processed (after we confirm send works)
 			try
-				set flagged status of m to true
-				set read status of m to true
+				tell application "Mail"
+					set flagged status of m to true
+					set read status of m to true
+				end tell
 			end try
 			
 		on error errMsg number errNum
